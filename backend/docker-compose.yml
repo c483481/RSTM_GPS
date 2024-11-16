@@ -1,0 +1,70 @@
+version: '3.8'
+    
+services:
+  # configuration backend application
+  backend:
+    # make sure backend application build after sql, nosql, and redis
+    depends_on:
+      - sql
+    # run docker file in this folder
+    restart: always
+    build: 
+      context: ./
+      dockerfile: dockerfile
+    # add environtment
+    env_file:
+      - .docker.env
+    # set networks
+    networks:
+      - backend_network
+    deploy:
+      resources:
+        limits:
+          # limit docker memory to 1 GB
+          memory: 1024m
+          # limit docker CPU 1 core
+          cpus: "1"
+  # set postgres configuration
+  sql:
+    image: postgres:latest
+    # make sure database always run when docker run
+    restart: always
+    # setting env
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: docker_database
+    volumes:
+      - quen:/var/lib/postgresql/data
+    # set networks
+    networks:
+      - backend_network
+    # limit docker memory to 1 GB
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+    # limit docker memory to 50 MB
+    deploy:
+      resources:
+        limits:
+          memory: 2048m
+# set networks
+networks:
+  backend_network:
+    driver: bridge
+# set volumes for save the data
+volumes:
+  backend:
+    external: true

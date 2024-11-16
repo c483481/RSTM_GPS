@@ -1,0 +1,7 @@
+node_modules/
+build/
+.env
+coverage/
+public/*.png
+public/*.jpg
+public/*jpeg
