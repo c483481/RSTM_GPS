@@ -45,8 +45,6 @@ export function defaultMiddleware(audiance?: string[]): RequestHandler {
 
             const userSession = verification.data as UserSession;
 
-            userSession.ip = getIp(req);
-
             saveUsersSession(req, userSession);
             next();
         } catch (error) {
@@ -81,8 +79,6 @@ export function middlewareRBAC(audiance?: string[]): RequestHandler {
             delete req.headers.authorization;
 
             const userSession = verification.data as UserSession;
-
-            userSession.ip = getIp(req);
 
             saveUsersSession(req, userSession);
             next();

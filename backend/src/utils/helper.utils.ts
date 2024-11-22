@@ -76,7 +76,7 @@ export function getDetailOption(req: Request): GetDetail_Payload {
 function getModifiedBy(data: UserSession): ModifiedBy {
     return {
         xid: data.xid,
-        email: data.email,
+        username: data.username,
     };
 }
 
@@ -94,14 +94,25 @@ export function compose<T, K>(arr: T[], fn: (attr: T) => K): K[] {
 
 export function createData<T extends BaseAttribute>(o: Omit<T, keyof BaseAttribute>, userSession?: UserSession): T {
     const timestamp = new Date();
+    const utcDate = new Date(
+        Date.UTC(
+            timestamp.getUTCFullYear(),
+            timestamp.getUTCMonth(),
+            timestamp.getUTCDate(),
+            timestamp.getUTCHours(),
+            timestamp.getUTCMinutes(),
+            timestamp.getUTCSeconds(),
+            timestamp.getUTCMilliseconds()
+        )
+    );
     const xid = ulid();
 
     return Object.assign(
         {
             xid: xid,
             version: 1,
-            createdAt: timestamp,
-            updatedAt: timestamp,
+            createdAt: utcDate,
+            updatedAt: utcDate,
             modifiedBy: getModifiedBy(userSession || DEFAULT_USER_SESSION_ANONYMUS),
         } as T,
         o
@@ -113,9 +124,21 @@ export function updateData<T extends BaseAttribute>(
     updatedValues: Partial<Omit<T, keyof BaseAttribute>>,
     userSession?: UserSession
 ): Partial<T> {
+    const timestamp = new Date();
+    const utcDate = new Date(
+        Date.UTC(
+            timestamp.getUTCFullYear(),
+            timestamp.getUTCMonth(),
+            timestamp.getUTCDate(),
+            timestamp.getUTCHours(),
+            timestamp.getUTCMinutes(),
+            timestamp.getUTCSeconds(),
+            timestamp.getUTCMilliseconds()
+        )
+    );
     return Object.assign(updatedValues, {
         modifiedBy: getModifiedBy(userSession || DEFAULT_USER_SESSION_ANONYMUS),
-        updatedAt: new Date(),
+        updatedAt: utcDate,
         version: currentValues.version + 1,
     } as T);
 }

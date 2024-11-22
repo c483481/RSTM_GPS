@@ -30,36 +30,15 @@ export class Auth extends BaseService implements AuthService {
             throw errorResponses.getError("E_AUTH_2");
         }
 
-        let token!: string;
-
-        if (users.role === ROLE.ADMIN || users.role === ROLE.SALES) {
-            token = jwtModule.issueWithAudience(
-                {
-                    xid: users.xid,
-                    username: users.username,
-                    auth: {
-                        role: "admin",
-                    },
-                },
-                users.role
-            );
-        } else if (users.role === ROLE.DRIVER) {
-            token = jwtModule.issueWithAudience(
-                {
-                    xid: users.xid,
-                    username: users.username,
-                    auth: {
-                        role: "driver",
-                        noHP: users.noHP,
-                    },
-                },
-                users.role
-            );
-        }
-
         const result = composeUsers(users) as AuthLogin_Result;
 
-        result.token = token;
+        result.token = jwtModule.issueWithAudience(
+            {
+                xid: users.xid,
+                username: users.username,
+            },
+            users.role
+        );
 
         return result;
     };

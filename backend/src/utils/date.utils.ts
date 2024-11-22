@@ -19,6 +19,20 @@ export function getEpochOneYearAgo(): number {
     return oneYearAgo.getTime();
 }
 
+export function toDateUTC(date: Date): Date {
+    return new Date(
+        Date.UTC(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate(),
+            date.getUTCHours(),
+            date.getUTCMinutes(),
+            date.getUTCSeconds(),
+            date.getUTCMilliseconds()
+        )
+    );
+}
+
 export function isLeapYear(year: number) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }

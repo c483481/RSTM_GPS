@@ -10,8 +10,7 @@ export interface ListResult<T> {
 
 export type UserSession = {
     xid: string;
-    email: string;
-    ip: string;
+    username: string;
 };
 
 export type List_Payload = {
@@ -30,7 +29,7 @@ export type GetDetail_Payload = {
 
 export interface ModifiedBy {
     xid: string;
-    email: string;
+    username: string;
 }
 
 export interface BaseAttribute {
@@ -49,19 +48,9 @@ export type BaseResult = {
     version: number;
 };
 
-type AuthAttribute =
-    | {
-          role: "admin" | "sales";
-      }
-    | {
-          role: "driver";
-          noHP: string;
-      };
-
 export interface UserAuthToken {
     xid: string;
     username: string;
-    auth: AuthAttribute;
 }
 
 export type EncodeToken = {

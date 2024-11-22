@@ -18,6 +18,7 @@ module.exports = {
                 createdAt: DEFAULT_TIMESTAMP,
                 updatedAt: DEFAULT_TIMESTAMP,
                 username: "admin",
+                name: "Admin",
                 noHP: "081234567890",
                 password: hashSync("qwert12345", 10),
                 role: ControlRole.ADMIN,

@@ -2,7 +2,7 @@
 
 const { CommonColumn } = require("../columns");
 const { id, version, createdAt, updatedAt, xid, modifiedBy } = CommonColumn;
-const name = "users";
+const name = "truck";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
@@ -13,27 +13,27 @@ module.exports = {
             updatedAt,
             xid,
             modifiedBy,
-            username: {
-                type: Sequelize.STRING(255),
+            namaTruck: {
+                type: Sequelize.STRING(50),
                 allowNull: false,
                 unique: true,
             },
-            name: {
-                type: Sequelize.STRING(255),
-                allowNull: false,
-            },
-            noHP: {
-                type: Sequelize.STRING(15),
-                allowNull: false,
-                unique: true,
-            },
-            role: {
+            platNomor: {
                 type: Sequelize.STRING(10),
                 allowNull: false,
+                unique: true,
             },
-            password: {
+            deskripsi: {
                 type: Sequelize.STRING(255),
                 allowNull: false,
+            },
+            status: {
+                type: Sequelize.STRING(15),
+                allowNull: false,
+            },
+            estimasiDone: {
+                type: Sequelize.DATE,
+                allowNull: true,
             },
         });
     },

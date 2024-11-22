@@ -2,21 +2,21 @@ import { CommonColumn } from "../../module/default.module";
 import { ModifiedBy } from "../../module/dto.module";
 import { Optional, Model, Sequelize, DataTypes } from "sequelize";
 import { BaseSequelizeAttribute, optionalSequelize } from "./common.model";
-import { TYPE_ROLE } from "../../constant/role.constant";
+import { TYPE_STATUS } from "../../constant/status.constant";
 
 const { id, xid, version, modifiedBy, updatedAt, createdAt } = CommonColumn;
 
-export interface UsersAttributes extends BaseSequelizeAttribute {
-    noHP: string;
-    username: string;
-    name: string;
-    password: string;
-    role: TYPE_ROLE;
+export interface TruckAttributes extends BaseSequelizeAttribute {
+    namaTruck: string;
+    platNomor: string;
+    deskripsi: string;
+    status: TYPE_STATUS;
+    estimasiDone: Date | null;
 }
 
-export type UsersCreationAttributes = Optional<UsersAttributes, optionalSequelize>;
+export type TruckCreationAttributes = Optional<TruckAttributes, optionalSequelize>;
 
-export class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
+export class Truck extends Model<TruckAttributes, TruckCreationAttributes> implements TruckAttributes {
     xid!: string;
     updatedAt!: Date;
     createdAt!: Date;
@@ -24,14 +24,14 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
     version!: number;
     id!: number;
 
-    noHP!: string;
-    username!: string;
-    name!: string;
-    password!: string;
-    role!: TYPE_ROLE;
+    platNomor!: string;
+    deskripsi!: string;
+    status!: TYPE_STATUS;
+    estimasiDone!: Date | null;
+    namaTruck!: string;
 
-    static initModels(sequelize: Sequelize): typeof Users {
-        return Users.init(
+    static initModels(sequelize: Sequelize): typeof Truck {
+        return Truck.init(
             {
                 id,
                 xid,
@@ -39,32 +39,32 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
                 modifiedBy,
                 updatedAt,
                 createdAt,
-                username: {
+                namaTruck: {
                     type: DataTypes.STRING(255),
                     allowNull: false,
                     unique: true,
                 },
-                name: {
+                platNomor: {
+                    type: DataTypes.STRING(255),
+                    allowNull: false,
+                    unique: true,
+                },
+                deskripsi: {
                     type: DataTypes.STRING(255),
                     allowNull: false,
                 },
-                noHP: {
+                status: {
                     type: DataTypes.STRING(15),
                     allowNull: false,
-                    unique: true,
                 },
-                role: {
-                    type: DataTypes.STRING(10),
-                    allowNull: false,
-                },
-                password: {
-                    type: DataTypes.STRING(255),
-                    allowNull: false,
+                estimasiDone: {
+                    type: DataTypes.DATE,
+                    allowNull: true,
                 },
             },
             {
                 sequelize,
-                tableName: "users",
+                tableName: "truck",
                 timestamps: false,
             }
         );

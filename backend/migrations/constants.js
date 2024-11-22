@@ -18,7 +18,15 @@ const ControlRole = {
     DRIVER: "DRIVER",
 };
 
+const ControlStatusJadwal = {
+    PENDING: "PENDING",
+    ONPROGRESS: "ONPROGRESS",
+    DONE: "DONE",
+    CANCEL: "CANCEL",
+};
+
 module.exports = {
     Constants,
     ControlRole,
+    ControlStatusJadwal,
 };

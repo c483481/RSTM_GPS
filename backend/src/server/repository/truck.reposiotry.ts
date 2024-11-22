@@ -1,65 +1,64 @@
-import { Op, Order, WhereOptions } from "sequelize";
-import { UsersRepository } from "../../contract/repository.contract";
+import { Order } from "sequelize";
+import { TruckRepository } from "../../contract/repository.contract";
 import { AppDataSource } from "../../module/datasource.module";
 import { FindResult, List_Payload } from "../../module/dto.module";
-import { Users, UsersAttributes, UsersCreationAttributes } from "../model/users.model";
+import { Truck, TruckAttributes, TruckCreationAttributes } from "../model/truck.model";
 import { BaseRepository } from "./base.repository";
 
-export class SequelizeUsersRepository extends BaseRepository implements UsersRepository {
-    private users!: typeof Users;
+export class SequelizeTruckRepository extends BaseRepository implements TruckRepository {
+    private truck!: typeof Truck;
     init(datasource: AppDataSource): void {
-        this.users = datasource.sqlModel.Users;
+        this.truck = datasource.sqlModel.Truck;
     }
 
-    findByUsername = async (username: string): Promise<UsersAttributes | null> => {
-        return this.users.findOne({
+    findByPlatNomor = async (platNomor: string): Promise<TruckAttributes | null> => {
+        return this.truck.findOne({
             where: {
-                username,
+                platNomor,
             },
         });
     };
 
-    findByXid = async (xid: string): Promise<UsersAttributes | null> => {
-        return this.users.findOne({
+    findByXid = async (xid: string): Promise<TruckAttributes | null> => {
+        return this.truck.findOne({
             where: {
                 xid,
             },
         });
     };
 
-    findUsersCount = async (): Promise<number> => {
-        return this.users.count();
+    findTruckCount = async (): Promise<number> => {
+        return this.truck.count();
     };
 
-    findList = async (payload: List_Payload): Promise<FindResult<UsersAttributes>> => {
-        const { showAll, filters } = payload;
+    findList = async (payload: List_Payload): Promise<FindResult<TruckAttributes>> => {
+        const { showAll } = payload;
 
         const { order } = this.parseSortBy(payload.sortBy);
 
         const limit = showAll ? undefined : payload.limit;
         const skip = showAll ? undefined : payload.skip;
 
-        const where: WhereOptions = {};
-
-        if (filters.username) {
-            where.username = {
-                [Op.iLike]: `%${filters.username}%`,
-            };
-        }
-
-        if (filters.role) {
-            where.role = filters.role;
-        }
-
-        return this.users.findAndCountAll({
+        return this.truck.findAndCountAll({
             order,
             limit,
             offset: skip,
         });
     };
 
-    createUsers = async (payload: UsersCreationAttributes): Promise<UsersAttributes> => {
-        return this.users.create(payload);
+    createTruck = async (payload: TruckCreationAttributes): Promise<TruckAttributes> => {
+        return this.truck.create(payload);
+    };
+
+    updateTruck = async (id: number, payload: Partial<TruckAttributes>, version: number): Promise<number> => {
+        const result = await this.truck.update(payload, {
+            where: {
+                id,
+                version,
+            },
+        });
+
+        return result[0];
     };
 
     private parseSortBy = (sortBy: string): { order: Order } => {
