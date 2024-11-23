@@ -1,7 +1,8 @@
 import { GetDetail_Payload, List_Payload, ListResult } from "../module/dto.module";
 import { AuthLogin_Payload, AuthLogin_Result } from "../server/dto/auth.dto";
+import { CheckpointResult, CreateCheckpoint_Payload } from "../server/dto/checkpoint.dto";
 import { CreateJadwal_Payload, JadwalResult, PatchJadwal_Payload } from "../server/dto/jadwal.dto";
-import { CreateTruck_Payload, TruckResult, UpdateTruck_Payload } from "../server/dto/truck.dto";
+import { CreateTruck_Payload, TruckResult, UpdateLocation_Payload, UpdateTruck_Payload } from "../server/dto/truck.dto";
 import { CreateUsers_Payload, UsersResult } from "../server/dto/users.dto";
 
 export interface AppServiceMap {
@@ -9,6 +10,7 @@ export interface AppServiceMap {
     users: UsersService;
     truck: TruckService;
     jadwal: JadwalService;
+    checkpoint: CheckpointService;
 }
 
 export interface AuthService {
@@ -23,6 +25,8 @@ export interface TruckService {
     getList(payload: List_Payload): Promise<ListResult<TruckResult>>;
 
     updateTruck(payload: UpdateTruck_Payload): Promise<TruckResult>;
+
+    updateLocation(payload: UpdateLocation_Payload): Promise<void>;
 }
 
 export interface JadwalService {
@@ -41,4 +45,8 @@ export interface UsersService {
     getList(payload: List_Payload): Promise<ListResult<UsersResult>>;
 
     createUsers(payload: CreateUsers_Payload): Promise<UsersResult>;
+}
+
+export interface CheckpointService {
+    createCheckpoint(data: CreateCheckpoint_Payload): Promise<CheckpointResult>;
 }

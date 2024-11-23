@@ -5,6 +5,7 @@ import { BaseSequelizeAttribute, optionalSequelize } from "./common.model";
 import { STATUS_JADWAL, TYPE_STATUS_JADWAL } from "../../constant/status-jadwal.constant";
 import { Truck, TruckAttributes } from "./truck.model";
 import { Users, UsersAttributes } from "./users.model";
+import { CheckpointAttributes } from "./checkpoint.model";
 
 const { id, xid, version, modifiedBy, updatedAt, createdAt } = CommonColumn;
 
@@ -21,6 +22,7 @@ export interface JadwalAttributes extends BaseSequelizeAttribute {
 export interface JadwalJoinAttributes extends JadwalAttributes {
     truck?: TruckAttributes;
     driver?: UsersAttributes;
+    checkpoints?: CheckpointAttributes[];
 }
 
 export type JadwalCreationAttributes = Optional<JadwalAttributes, optionalSequelize>;

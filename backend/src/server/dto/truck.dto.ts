@@ -23,3 +23,10 @@ export type TruckResult = BaseResult & {
     status: TYPE_STATUS;
     estimasiDone: number | null;
 };
+
+export type UpdateLocation_Payload = {
+    xid: string;
+    latitude: number;
+    longitude: number;
+    battery: number;
+};

@@ -1,184 +1,94 @@
 #include <SoftwareSerial.h>
-#include "SIM800L.h"
+#define BLUE_LED 3
+#define GREEN_LED 2
 
-#define SIM800_RX_PIN 10
-#define SIM800_TX_PIN 11
-#define SIM800_RST_PIN 6
-#define GREEN_LED_PIN 2  // Success indicator
-#define BLUE_LED_PIN 3   // Failure indicator
 
-const char APN[] = "Internet.be";
-const char URL[] = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
+SoftwareSerial sim800(7, 6);  // RX, TX (ubah pin sesuai kebutuhan Anda)
 
-SIM800L* sim800l;
+const String APN = "internet";  // APN operator Anda
 
-void setStatusLED(bool success) {
-  if (success) {
-    digitalWrite(GREEN_LED_PIN, HIGH);
-    digitalWrite(BLUE_LED_PIN, LOW);
-    delay(100);
-    digitalWrite(GREEN_LED_PIN, LOW);
+void setup() {
+  Serial.begin(9600);
+  sim800.begin(9600);
+  Serial.println("Initializing SIM800L...");
+
+  pinMode(BLUE_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+
+  digitalWrite(BLUE_LED, HIGH);
+  digitalWrite(GREEN_LED, HIGH);
+
+  delay(3000);
+
+
+  digitalWrite(BLUE_LED, LOW);
+  digitalWrite(GREEN_LED, LOW);
+
+  delay(2000);
+
+
+  if (initializeSIM800()) {
+    Serial.println("SIM800L initialized successfully!");
+    digitalWrite(BLUE_LED, HIGH);
+
   } else {
-    digitalWrite(BLUE_LED_PIN, HIGH);
-    digitalWrite(GREEN_LED_PIN, LOW);
-    delay(100);
-    digitalWrite(BLUE_LED_PIN, LOW);
+    Serial.println("Failed to initialize SIM800L. Check connections or SIM card.");
+    while (true)
+      ;
   }
 }
 
-void startupSequence() {
-  // Repeat sequence 3 times
-  for(int i = 0; i < 3; i++) {
-    // Green LED on for 2 seconds
-    digitalWrite(GREEN_LED_PIN, HIGH);
-    delay(2000);
-    digitalWrite(GREEN_LED_PIN, LOW);
-    
-    // Blue LED on for 1 second
-    digitalWrite(BLUE_LED_PIN, HIGH);
-    delay(1000);
-    digitalWrite(BLUE_LED_PIN, LOW);
-  }
-}
-
-void setup() {  
-  // Initialize Serial Monitor for debugging
-  Serial.begin(115200);
-  while(!Serial);
-
-  // Initialize LED pins
-  pinMode(GREEN_LED_PIN, OUTPUT);
-  pinMode(BLUE_LED_PIN, OUTPUT);
-
-  startupSequence();
-
-  digitalWrite(GREEN_LED_PIN, LOW);
-  digitalWrite(BLUE_LED_PIN, LOW);
-  
-  // Initialize a SoftwareSerial
-  SoftwareSerial* serial = new SoftwareSerial(SIM800_RX_PIN, SIM800_TX_PIN);
-  serial->begin(9600);
-  delay(1000);
-   
-  // Initialize SIM800L driver with an internal buffer of 200 bytes and a reception buffer of 512 bytes
-  sim800l = new SIM800L((Stream *)serial, SIM800_RST_PIN, 200, 512);
-
-  // Setup module for GPRS communication
-  setupModule();
-}
- 
 void loop() {
-
-  digitalWrite(GREEN_LED_PIN, LOW);
-  digitalWrite(BLUE_LED_PIN, LOW);
-  // Establish GPRS connectivity (5 trials)
-  bool connected = false;
-  for(uint8_t i = 0; i < 5 && !connected; i++) {
-    delay(1000);
-    connected = sim800l->connectGPRS();
+  Serial.println("Attempting HTTP GET...");
+  if (httpGET("http://103.47.226.184/api")) {
+    Serial.println("Success");
+    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
   }
-
-  // Check if connected, if not reset the module and setup the config again
-  if(connected) {
-    setStatusLED(true);  // Green LED flash for success
-    Serial.print(F("GPRS connected with IP "));
-    Serial.println(sim800l->getIP());
-    delay(2000);
-  } else {
-    setStatusLED(false);  // Blue LED flash for failure
-    Serial.println(F("GPRS not connected !"));
-    Serial.println(F("Reset the module."));
-    sim800l->reset();
-    setupModule();
-    return;
-  }
-
-  digitalWrite(GREEN_LED_PIN, LOW);
-  digitalWrite(BLUE_LED_PIN, LOW);
-  Serial.println(F("Start HTTP GET..."));
-
-  // Do HTTP GET communication with 10s for the timeout (read)
-  uint16_t rc = sim800l->doGet(URL, 10000);
-  if(rc == 200) {
-    setStatusLED(true);  // Green LED flash for success
-    Serial.print(F("HTTP GET successful ("));
-    Serial.print(sim800l->getDataSizeReceived());
-    Serial.println(F(" bytes)"));
-    Serial.print(F("Received : "));
-    Serial.println(sim800l->getDataReceived());
-  } else {
-    setStatusLED(false);  // Blue LED flash for failure
-    Serial.print(F("HTTP GET error "));
-    Serial.println(rc);
-  }
-
-  delay(1000);
-
-  // Close GPRS connectivity (5 trials)
-  bool disconnected = sim800l->disconnectGPRS();
-  for(uint8_t i = 0; i < 5 && !connected; i++) {
-    delay(1000);
-    disconnected = sim800l->disconnectGPRS();
-  }
-  
-  if(disconnected) {
-    Serial.println(F("GPRS disconnected !"));
-  } else {
-    Serial.println(F("GPRS still connected !"));
-  }
-
-  // Go into low power mode
-  bool lowPowerMode = sim800l->setPowerMode(MINIMUM);
-  if(lowPowerMode) {
-    Serial.println(F("Module in low power mode"));
-  } else {
-    Serial.println(F("Failed to switch module to low power mode"));
-  }
-
-  delay(5000);
+  delay(5000);  // Tunggu 5 detik sebelum mencoba lagi
+  digitalWrite(BLUE_LED, LOW);
+  digitalWrite(GREEN_LED, LOW);
 }
 
-void setupModule() {
-  // Wait until the module is ready to accept AT commands
-  while(!sim800l->isReady()) {
-    setStatusLED(false);  // Blue LED flash for failure
-    Serial.println(F("Problem to initialize AT command, retry in 1 sec"));
-    delay(1000);
-  }
-  setStatusLED(true);  // Green LED flash for success
-  Serial.println(F("Setup Complete!"));
+bool initializeSIM800() {
+  sendCommand("AT", "OK", 2000);                                    // Cek koneksi modul
+  sendCommand("AT+CSQ", "OK", 2000);                                // Cek sinyal
+  sendCommand("AT+CPIN?", "READY", 2000);                           // Cek status SIM
+  sendCommand("AT+CREG?", "+CREG: 0,1", 2000);                      // Cek registrasi jaringan
+  sendCommand("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"", "OK", 2000);     // Set koneksi GPRS
+  sendCommand("AT+SAPBR=3,1,\"APN\",\"" + APN + "\"", "OK", 2000);  // Set APN
+  return sendCommand("AT+SAPBR=1,1", "OK", 5000);                   // Buka koneksi GPRS
+}
 
-  // Wait for the GSM signal
-  uint8_t signal = sim800l->getSignal();
-  while(signal <= 0) {
-    setStatusLED(false);  // Blue LED flash for failure
-    delay(1000);
-    signal = sim800l->getSignal();
-  }
-  setStatusLED(true);  // Green LED flash for success
-  Serial.print(F("Signal OK (strenght: "));
-  Serial.print(signal);
-  Serial.println(F(")"));
-  delay(1000);
+bool httpGET(String url) {
+  // Inisialisasi HTTP
+  if (!sendCommand("AT+HTTPINIT", "OK", 2000)) return false;
 
-  // Wait for operator network registration
-  NetworkRegistration network = sim800l->getRegistrationStatus();
-  while(network != REGISTERED_HOME && network != REGISTERED_ROAMING) {
-    setStatusLED(false);  // Blue LED flash for failure
-    delay(1000);
-    network = sim800l->getRegistrationStatus();
-  }
-  setStatusLED(true);  // Green LED flash for success
-  Serial.println(F("Network registration OK"));
-  delay(1000);
+  // Set parameter HTTP
+  if (!sendCommand("AT+HTTPPARA=\"CID\",1", "OK", 2000)) return false;
+  if (!sendCommand("AT+HTTPPARA=\"URL\",\"" + url + "\"", "OK", 2000)) return false;
 
-  // Setup APN for GPRS configuration
-  bool success = sim800l->setupGPRS(APN);
-  while(!success) {
-    setStatusLED(false);  // Blue LED flash for failure
-    success = sim800l->setupGPRS(APN);
-    delay(5000);
+  // Mulai aksi HTTP GET
+  if (!sendCommand("AT+HTTPACTION=0", "+HTTPACTION: 0,200", 10000)) {
+    sendCommand("AT+HTTPTERM", "OK", 2000);  // Pastikan koneksi HTTP ditutup jika gagal
+    return false;
   }
-  setStatusLED(true);  // Green LED flash for success
-  Serial.println(F("GPRS config OK"));
+
+  // Tutup HTTP setelah pengiriman berhasil
+  sendCommand("AT+HTTPTERM", "OK", 2000);
+  return true;
+}
+
+bool sendCommand(String command, String expectedResponse, int timeout) {
+  sim800.println(command);
+  long int time = millis();
+  while ((time + timeout) > millis()) {
+    if (sim800.available()) {
+      String response = sim800.readString();
+      if (response.indexOf(expectedResponse) != -1) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

@@ -1,13 +1,13 @@
-import { AppServiceMap, TruckService } from "../../contract/service.contract";
-import { getDetailOption, getForceUsersSession, getListOption } from "../../utils/helper.utils";
-import { BaseController } from "./base.controller";
 import { Request } from "express";
-import { TruckValidator } from "../validate/truck.validator";
-import { validate } from "../validate";
-import { CreateTruck_Payload, UpdateTruck_Payload } from "../dto/truck.dto";
-import { WrapAppHandler } from "../../handler/default.handler";
-import { defaultMiddleware, middlewareRBAC } from "../../utils/middleware-helper.utils";
 import { ROLE } from "../../constant/role.constant";
+import { AppServiceMap, TruckService } from "../../contract/service.contract";
+import { WrapAppHandler } from "../../handler/default.handler";
+import { getDetailOption, getForceUsersSession, getListOption } from "../../utils/helper.utils";
+import { defaultMiddleware } from "../../utils/middleware-helper.utils";
+import { CreateTruck_Payload, UpdateLocation_Payload, UpdateTruck_Payload } from "../dto/truck.dto";
+import { validate } from "../validate";
+import { TruckValidator } from "../validate/truck.validator";
+import { BaseController } from "./base.controller";
 
 export class TruckController extends BaseController {
     private service!: TruckService;
@@ -25,6 +25,7 @@ export class TruckController extends BaseController {
         this.router.get("/", defaultMiddleware(), WrapAppHandler(this.getList));
         this.router.post("/", defaultMiddleware([ROLE.ADMIN]), WrapAppHandler(this.createTruck));
         this.router.put("/:xid", defaultMiddleware([ROLE.ADMIN, ROLE.DRIVER]), WrapAppHandler(this.updateTruck));
+        this.router.post("/:xid/location", WrapAppHandler(this.updateLocation));
     }
 
     getDetail = async (req: Request) => {
@@ -66,5 +67,17 @@ export class TruckController extends BaseController {
         const result = await this.service.updateTruck(payload);
 
         return result;
+    };
+
+    updateLocation = async (req: Request) => {
+        const payload = req.body as UpdateLocation_Payload;
+
+        payload.xid = req.params.xid;
+
+        validate(TruckValidator.UpdateLocation_Payload, payload);
+
+        await this.service.updateLocation(payload);
+
+        return "success";
     };
 }

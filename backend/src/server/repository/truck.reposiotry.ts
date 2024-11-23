@@ -4,6 +4,9 @@ import { AppDataSource } from "../../module/datasource.module";
 import { FindResult, List_Payload } from "../../module/dto.module";
 import { Truck, TruckAttributes, TruckCreationAttributes } from "../model/truck.model";
 import { BaseRepository } from "./base.repository";
+import { UpdateLocation_Payload } from "../dto/truck.dto";
+import { pubSub } from "../../module/pubsub.module";
+import { pubsubEvent } from "../../constant/pubsub-symbole.constant";
 
 export class SequelizeTruckRepository extends BaseRepository implements TruckRepository {
     private truck!: typeof Truck;
@@ -59,6 +62,10 @@ export class SequelizeTruckRepository extends BaseRepository implements TruckRep
         });
 
         return result[0];
+    };
+
+    updateLocation = (payload: UpdateLocation_Payload): void => {
+        pubSub.publish(pubsubEvent.updateTruckLocation, payload);
     };
 
     private parseSortBy = (sortBy: string): { order: Order } => {

@@ -1,4 +1,6 @@
 import { FindResult, List_Payload } from "../module/dto.module";
+import { UpdateLocation_Payload } from "../server/dto/truck.dto";
+import { CheckpointAttributes, CheckpointCreationAttributes } from "../server/model/checkpoint.model";
 import { JadwalAttributes, JadwalCreationAttributes, JadwalJoinAttributes } from "../server/model/jadwal.model";
 import { TruckAttributes, TruckCreationAttributes } from "../server/model/truck.model";
 import { UsersCreationAttributes, UsersAttributes } from "../server/model/users.model";
@@ -7,6 +9,7 @@ export interface AppRepositoryMap {
     users: UsersRepository;
     truck: TruckRepository;
     jadwal: JadwalRepository;
+    checkpoint: CheckpointRepository;
 }
 
 export interface UsersRepository {
@@ -33,6 +36,8 @@ export interface TruckRepository {
     createTruck(payload: TruckCreationAttributes): Promise<TruckAttributes>;
 
     updateTruck(id: number, payload: Partial<TruckAttributes>, version: number): Promise<number>;
+
+    updateLocation(payload: UpdateLocation_Payload): void;
 }
 
 export interface JadwalRepository {
@@ -45,4 +50,8 @@ export interface JadwalRepository {
     deleteJadwal(id: number): Promise<number>;
 
     findList(payload: List_Payload): Promise<FindResult<JadwalJoinAttributes>>;
+}
+
+export interface CheckpointRepository {
+    insertCheckpoint(data: CheckpointCreationAttributes): Promise<CheckpointAttributes>;
 }

@@ -18,6 +18,7 @@ import { STATUS_JADWAL } from "../../constant/status-jadwal.constant";
 import { JadwalService } from "../../contract/service.contract";
 import { STATUS } from "../../constant/status.constant";
 import { ROLE } from "../../constant/role.constant";
+import { composeCheckpoint } from "./checkpoint.service";
 
 export class Jadwal extends BaseService implements JadwalService {
     private truckRepository!: TruckRepository;
@@ -144,6 +145,7 @@ export function composeJadwal(row: JadwalJoinAttributes): JadwalResult {
     return composeResult(row, {
         truck: composeTruck(row.truck!),
         driver: composeUsers(row.driver!),
+        checkpoints: row.checkpoints!.map((checkpoint) => composeCheckpoint(checkpoint)),
         tanggal: toUnixEpoch(row.startDate),
         deskripsi: row.description,
         destination: row.destination,

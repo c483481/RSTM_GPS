@@ -55,6 +55,7 @@
         "pg-hstore": "^2.3.4",
         "sequelize": "^6.28.2",
         "sequelize-cli": "^6.6.0",
+        "socket.io": "^4.8.1",
         "ulidx": "^2.3.0"
     }
 }

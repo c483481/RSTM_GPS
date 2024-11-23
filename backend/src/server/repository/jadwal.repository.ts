@@ -6,6 +6,7 @@ import { BaseRepository } from "./base.repository";
 import { JadwalRepository } from "../../contract/repository.contract";
 import { Truck } from "../model/truck.model";
 import { Users } from "../model/users.model";
+import { Checkpoint } from "../model/checkpoint.model";
 
 export class SequelizeJadwalRepository extends BaseRepository implements JadwalRepository {
     private jadwal!: typeof Jadwal;
@@ -28,6 +29,11 @@ export class SequelizeJadwalRepository extends BaseRepository implements JadwalR
                     model: Users,
                     as: "driver",
                     foreignKey: "driverId",
+                },
+                {
+                    model: Checkpoint,
+                    as: "checkpoints",
+                    foreignKey: "jadwalId",
                 },
             ],
         });
@@ -80,6 +86,11 @@ export class SequelizeJadwalRepository extends BaseRepository implements JadwalR
                     model: Users,
                     as: "driver",
                     foreignKey: "driverId",
+                },
+                {
+                    model: Checkpoint,
+                    as: "checkpoints",
+                    foreignKey: "jadwalId",
                 },
             ],
         });

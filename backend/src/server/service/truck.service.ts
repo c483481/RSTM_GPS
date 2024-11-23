@@ -2,7 +2,7 @@ import { isValid } from "ulidx";
 import { STATUS } from "../../constant/status.constant";
 import { AppRepositoryMap, TruckRepository } from "../../contract/repository.contract";
 import { compose, composeResult, createData, updateData } from "../../utils/helper.utils";
-import { CreateTruck_Payload, TruckResult, UpdateTruck_Payload } from "../dto/truck.dto";
+import { CreateTruck_Payload, TruckResult, UpdateLocation_Payload, UpdateTruck_Payload } from "../dto/truck.dto";
 import { TruckAttributes, TruckCreationAttributes } from "../model/truck.model";
 import { BaseService } from "./base.service";
 import { errorResponses } from "../../response";
@@ -109,6 +109,24 @@ export class Truck extends BaseService implements TruckService {
         Object.assign(truck, updatedValue);
 
         return composeTruck(truck);
+    };
+
+    updateLocation = async (payload: UpdateLocation_Payload): Promise<void> => {
+        const { xid, latitude, longitude, battery } = payload;
+
+        if (!isValid(xid)) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        const truck = await this.truckRepo.findByXid(xid);
+
+        if (!truck) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        console.table({ xid, latitude, longitude, battery });
+
+        this.truckRepo.updateLocation(payload);
     };
 }
 
