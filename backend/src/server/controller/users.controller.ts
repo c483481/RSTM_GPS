@@ -8,6 +8,7 @@ import { Request } from "express";
 import { UsersValidator } from "../validate/users.validator";
 import { validate } from "../validate";
 import { ROLE } from "../../constant/role.constant";
+import { GetDetail_Payload } from "../../module/dto.module";
 
 export class UsersController extends BaseController {
     private service!: UsersService;
@@ -22,6 +23,7 @@ export class UsersController extends BaseController {
 
     initRoute(): void {
         this.router.get("/:xid/detail", middlewareRBAC(), WrapAppHandler(this.getDetail));
+        this.router.get("/profile", middlewareRBAC(), WrapAppHandler(this.getOwnProfile));
         this.router.get("/", middlewareRBAC(), WrapAppHandler(this.getList));
         this.router.post("/", middlewareRBAC([ROLE.ADMIN]), WrapAppHandler(this.createUsers));
         this.router.put("/own", middlewareRBAC(), WrapAppHandler(this.updateProfile));
@@ -29,6 +31,18 @@ export class UsersController extends BaseController {
 
     getDetail = async (req: Request): Promise<unknown> => {
         const payload = getDetailOption(req);
+
+        const result = await this.service.getDetail(payload);
+
+        return result;
+    };
+
+    getOwnProfile = async (req: Request): Promise<unknown> => {
+        const userSession = getForceUsersSession(req);
+        const payload: GetDetail_Payload = {
+            xid: userSession.xid,
+            usersSession: userSession,
+        };
 
         const result = await this.service.getDetail(payload);
 
