@@ -1,7 +1,7 @@
 import { AppServiceMap, UsersService } from "../../contract/service.contract";
 import { WrapAppHandler } from "../../handler/default.handler";
 import { getDetailOption, getForceUsersSession, getListOption } from "../../utils/helper.utils";
-import { middlewareRBAC } from "../../utils/middleware-helper.utils";
+import { defaultMiddleware } from "../../utils/middleware-helper.utils";
 import { CreateUsers_Payload, UpdateUsers_Payload } from "../dto/users.dto";
 import { BaseController } from "./base.controller";
 import { Request } from "express";
@@ -22,11 +22,11 @@ export class UsersController extends BaseController {
     }
 
     initRoute(): void {
-        this.router.get("/:xid/detail", middlewareRBAC(), WrapAppHandler(this.getDetail));
-        this.router.get("/profile", middlewareRBAC(), WrapAppHandler(this.getOwnProfile));
-        this.router.get("/", middlewareRBAC(), WrapAppHandler(this.getList));
-        this.router.post("/", middlewareRBAC([ROLE.ADMIN]), WrapAppHandler(this.createUsers));
-        this.router.put("/own", middlewareRBAC(), WrapAppHandler(this.updateProfile));
+        this.router.get("/:xid/detail", defaultMiddleware(), WrapAppHandler(this.getDetail));
+        this.router.get("/profile", defaultMiddleware(), WrapAppHandler(this.getOwnProfile));
+        this.router.get("/", defaultMiddleware(), WrapAppHandler(this.getList));
+        this.router.post("/", defaultMiddleware([ROLE.ADMIN]), WrapAppHandler(this.createUsers));
+        this.router.put("/own", defaultMiddleware(), WrapAppHandler(this.updateProfile));
     }
 
     getDetail = async (req: Request): Promise<unknown> => {

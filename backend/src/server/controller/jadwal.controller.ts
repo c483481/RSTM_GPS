@@ -1,13 +1,13 @@
+import { Request } from "express";
 import { STATUS_JADWAL } from "../../constant/status-jadwal.constant";
 import { AppServiceMap, JadwalService } from "../../contract/service.contract";
 import { WrapAppHandler } from "../../handler/default.handler";
 import { getDetailOption, getListOption } from "../../utils/helper.utils";
-import { middlewareRBAC } from "../../utils/middleware-helper.utils";
+import { defaultMiddleware } from "../../utils/middleware-helper.utils";
 import { CreateJadwal_Payload, PatchJadwal_Payload } from "../dto/jadwal.dto";
 import { validate } from "../validate";
 import { JadwalValidator } from "../validate/jadwal.validator";
 import { BaseController } from "./base.controller";
-import { Request } from "express";
 
 export class JadwalController extends BaseController {
     private service!: JadwalService;
@@ -20,13 +20,13 @@ export class JadwalController extends BaseController {
     }
 
     initRoute(): void {
-        this.router.post("/", middlewareRBAC(), WrapAppHandler(this.createJadwal));
-        this.router.get("/:xid/detail", middlewareRBAC(), WrapAppHandler(this.getDetail));
-        this.router.get("/", middlewareRBAC(), WrapAppHandler(this.getList));
+        this.router.post("/", defaultMiddleware(), WrapAppHandler(this.createJadwal));
+        this.router.get("/:xid/detail", defaultMiddleware(), WrapAppHandler(this.getDetail));
+        this.router.get("/", defaultMiddleware(), WrapAppHandler(this.getList));
 
-        this.router.patch("/:xid/onprogress", middlewareRBAC(), WrapAppHandler(this.patchOnProgress));
-        this.router.patch("/:xid/done", middlewareRBAC(), WrapAppHandler(this.patchDone));
-        this.router.patch("/:xid/cancel", middlewareRBAC(), WrapAppHandler(this.patchCancel));
+        this.router.patch("/:xid/onprogress", defaultMiddleware(), WrapAppHandler(this.patchOnProgress));
+        this.router.patch("/:xid/done", defaultMiddleware(), WrapAppHandler(this.patchDone));
+        this.router.patch("/:xid/cancel", defaultMiddleware(), WrapAppHandler(this.patchCancel));
     }
 
     createJadwal = async (req: Request): Promise<unknown> => {
