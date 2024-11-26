@@ -1,8 +1,8 @@
 import { AppServiceMap, UsersService } from "../../contract/service.contract";
 import { WrapAppHandler } from "../../handler/default.handler";
-import { getDetailOption, getListOption } from "../../utils/helper.utils";
+import { getDetailOption, getForceUsersSession, getListOption } from "../../utils/helper.utils";
 import { middlewareRBAC } from "../../utils/middleware-helper.utils";
-import { CreateUsers_Payload } from "../dto/users.dto";
+import { CreateUsers_Payload, UpdateUsers_Payload } from "../dto/users.dto";
 import { BaseController } from "./base.controller";
 import { Request } from "express";
 import { UsersValidator } from "../validate/users.validator";
@@ -24,6 +24,7 @@ export class UsersController extends BaseController {
         this.router.get("/:xid/detail", middlewareRBAC(), WrapAppHandler(this.getDetail));
         this.router.get("/", middlewareRBAC(), WrapAppHandler(this.getList));
         this.router.post("/", middlewareRBAC([ROLE.ADMIN]), WrapAppHandler(this.createUsers));
+        this.router.put("/own", middlewareRBAC(), WrapAppHandler(this.updateProfile));
     }
 
     getDetail = async (req: Request): Promise<unknown> => {
@@ -48,6 +49,18 @@ export class UsersController extends BaseController {
         validate(UsersValidator.CreateUsers_Payload, payload);
 
         const result = await this.service.createUsers(payload);
+
+        return result;
+    };
+
+    updateProfile = async (req: Request): Promise<unknown> => {
+        const payload = req.body as UpdateUsers_Payload;
+
+        validate(UsersValidator.UpdateUsers_Payload, payload);
+
+        payload.usersession = getForceUsersSession(req);
+
+        const result = await this.service.updateUsers(payload);
 
         return result;
     };

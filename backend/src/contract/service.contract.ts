@@ -3,7 +3,7 @@ import { AuthLogin_Payload, AuthLogin_Result } from "../server/dto/auth.dto";
 import { CheckpointResult, CreateCheckpoint_Payload } from "../server/dto/checkpoint.dto";
 import { CreateJadwal_Payload, JadwalResult, PatchJadwal_Payload } from "../server/dto/jadwal.dto";
 import { CreateTruck_Payload, TruckResult, UpdateLocation_Payload, UpdateTruck_Payload } from "../server/dto/truck.dto";
-import { CreateUsers_Payload, UsersResult } from "../server/dto/users.dto";
+import { CreateUsers_Payload, UpdateUsers_Payload, UsersResult } from "../server/dto/users.dto";
 
 export interface AppServiceMap {
     auth: AuthService;
@@ -45,6 +45,8 @@ export interface UsersService {
     getList(payload: List_Payload): Promise<ListResult<UsersResult>>;
 
     createUsers(payload: CreateUsers_Payload): Promise<UsersResult>;
+
+    updateUsers(payload: UpdateUsers_Payload): Promise<UsersResult>;
 }
 
 export interface CheckpointService {

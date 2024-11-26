@@ -1,8 +1,8 @@
 import { isValid } from "ulidx";
 import { AppRepositoryMap, UsersRepository } from "../../contract/repository.contract";
 import { GetDetail_Payload, List_Payload, ListResult } from "../../module/dto.module";
-import { compose, composeResult, createData } from "../../utils/helper.utils";
-import { CreateUsers_Payload, UsersResult } from "../dto/users.dto";
+import { compose, composeResult, createData, updateData } from "../../utils/helper.utils";
+import { CreateUsers_Payload, UpdateUsers_Payload, UsersResult } from "../dto/users.dto";
 import { UsersAttributes, UsersCreationAttributes } from "../model/users.model";
 import { BaseService } from "./base.service";
 import { errorResponses } from "../../response";
@@ -57,6 +57,33 @@ export class Users extends BaseService implements UsersService {
         const result = await this.usersRepository.createUsers(createdValues);
 
         return composeUsers(result);
+    };
+
+    updateUsers = async (payload: UpdateUsers_Payload): Promise<UsersResult> => {
+        const { name, password, usersession, version } = payload;
+
+        const newPassword = await bcryptModule.hash(password);
+
+        const user = await this.usersRepository.findByXid(usersession.xid);
+
+        if (!user) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        const updateValues = updateData<UsersAttributes>(user, {
+            name,
+            password: newPassword,
+        });
+
+        const result = await this.usersRepository.updateUsers(user.id, updateValues, version);
+
+        if (!result) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        Object.assign(user, updateValues);
+
+        return composeUsers(user);
     };
 }
 

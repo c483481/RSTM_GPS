@@ -22,6 +22,8 @@ export interface UsersRepository {
     createUsers(payload: UsersCreationAttributes): Promise<UsersAttributes>;
 
     findList(payload: List_Payload): Promise<FindResult<UsersAttributes>>;
+
+    updateUsers(id: number, payload: Partial<UsersAttributes>, version: number): Promise<number>;
 }
 
 export interface TruckRepository {
