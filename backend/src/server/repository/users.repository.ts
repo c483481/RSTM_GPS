@@ -62,6 +62,17 @@ export class SequelizeUsersRepository extends BaseRepository implements UsersRep
         return this.users.create(payload);
     };
 
+    updateUsers = async (id: number, payload: Partial<UsersAttributes>, version: number): Promise<number> => {
+        const result = await this.users.update(payload, {
+            where: {
+                id,
+                version,
+            },
+        });
+
+        return result[0];
+    };
+
     private parseSortBy = (sortBy: string): { order: Order } => {
         // determine sorting option
         let order: Order;

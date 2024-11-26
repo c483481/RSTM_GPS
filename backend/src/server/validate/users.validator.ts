@@ -13,4 +13,11 @@ export class UsersValidator {
         },
         $$strict: true,
     });
+
+    static UpdateUsers_Payload = baseValidator.compile({
+        name: "string|empty:false|required|min:5|max:255",
+        password: "string|empty:false|required",
+        version: "number|empty:false|required|min:1",
+        $$strict: true,
+    });
 }
