@@ -150,5 +150,6 @@ export function composeJadwal(row: JadwalJoinAttributes): JadwalResult {
         deskripsi: row.description,
         destination: row.destination,
         customer: row.customer,
+        status: row.status,
     });
 }

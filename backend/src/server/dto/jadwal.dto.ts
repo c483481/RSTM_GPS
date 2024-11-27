@@ -12,6 +12,7 @@ export type JadwalResult = BaseResult & {
     customer: string;
     deskripsi: string | null;
     destination: string;
+    status: TYPE_STATUS_JADWAL;
 };
 
 export type CreateJadwal_Payload = {
