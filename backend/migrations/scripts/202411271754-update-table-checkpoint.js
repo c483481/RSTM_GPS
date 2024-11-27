@@ -8,17 +8,14 @@ const name = "checkpoint";
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.addColumn(name, "status", {
-            type: {
-                type: Sequelize.ENUM(
-                    ControlStatusJadwal.ONPROGRESS,
-                    ControlStatusJadwal.DONE,
-                    ControlStatusJadwal.PENDING,
-                    ControlStatusJadwal.CANCEL
-                ),
-                allowNull: false,
-                defaultValue: ControlStatusJadwal.PENDING,
-            },
+            type: Sequelize.ENUM(
+                ControlStatusJadwal.ONPROGRESS,
+                ControlStatusJadwal.DONE,
+                ControlStatusJadwal.PENDING,
+                ControlStatusJadwal.CANCEL
+            ),
             allowNull: false,
+            defaultValue: ControlStatusJadwal.PENDING,
         });
     },
 
