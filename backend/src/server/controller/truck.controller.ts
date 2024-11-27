@@ -57,6 +57,8 @@ export class TruckController extends BaseController {
         const img = TruckValidator.isValidImage(files);
 
         if (!img) {
+            console.log(req.files);
+            console.log("gambar tidak di temukan");
             throw errorResponses.getError("E_FOUND_1");
         }
 
