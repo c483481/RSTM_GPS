@@ -153,5 +153,7 @@ export function composeTruck(row: TruckAttributes): TruckResult {
         deskripsi: row.deskripsi,
         status: row.status,
         estimasiDone: row.estimasiDone ? toUnixEpoch(row.estimasiDone) : null,
+        truckImg: row.truckImg,
+        maintanaceImg: row.truckMaintenanceImg,
     });
 }
