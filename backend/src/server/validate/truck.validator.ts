@@ -1,3 +1,4 @@
+import { UploadedFile } from "express-fileupload";
 import { baseValidator } from "./base.validator";
 
 export class TruckValidator {
@@ -14,6 +15,51 @@ export class TruckValidator {
         version: "number|empty:false|required|min:1",
         $$strict: true,
     });
+
+    static isValidImage = (payload: unknown): UploadedFile | null => {
+        if (!payload) {
+            return null;
+        }
+
+        if (typeof payload !== "object" || !("image" in payload)) {
+            return null;
+        }
+
+        if (!this.isValidUploadedFile(payload.image)) {
+            return null;
+        }
+
+        if (!["image/jpeg", "image/png"].includes(payload.image.mimetype)) {
+            return null;
+        }
+
+        return payload.image;
+    };
+
+    static isValidUploadedFile(obj: unknown): obj is UploadedFile {
+        return (
+            obj != null &&
+            typeof obj == "object" &&
+            "name" in obj &&
+            typeof obj.name === "string" &&
+            "mv" in obj &&
+            typeof obj.mv === "function" &&
+            "encoding" in obj &&
+            typeof obj.encoding === "string" &&
+            "mimetype" in obj &&
+            typeof obj.mimetype === "string" &&
+            "data" in obj &&
+            Buffer.isBuffer(obj.data) &&
+            "tempFilePath" in obj &&
+            typeof obj.tempFilePath === "string" &&
+            "truncated" in obj &&
+            typeof obj.truncated === "boolean" &&
+            "size" in obj &&
+            typeof obj.size === "number" &&
+            "md5" in obj &&
+            typeof obj.md5 === "string"
+        );
+    }
 
     static UpdateLocation_Payload = baseValidator.compile({
         xid: "string|empty:false|required",

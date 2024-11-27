@@ -8,6 +8,7 @@ import { CreateTruck_Payload, UpdateLocation_Payload, UpdateTruck_Payload } from
 import { validate } from "../validate";
 import { TruckValidator } from "../validate/truck.validator";
 import { BaseController } from "./base.controller";
+import { errorResponses } from "../../response";
 
 export class TruckController extends BaseController {
     private service!: TruckService;
@@ -51,6 +52,16 @@ export class TruckController extends BaseController {
 
         payload.userSession = getForceUsersSession(req);
 
+        const files = req.files;
+
+        const img = TruckValidator.isValidImage(files);
+
+        if (!img) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        payload.truckImg = img;
+
         const result = await this.service.createTruck(payload);
 
         return result;
@@ -61,8 +72,11 @@ export class TruckController extends BaseController {
 
         validate(TruckValidator.UpdateTruck_Payload, payload);
 
+        const files = req.files;
+
         payload.xid = req.params.xid;
         payload.userSession = getForceUsersSession(req);
+        payload.maintananceImg = TruckValidator.isValidImage(files);
 
         const result = await this.service.updateTruck(payload);
 

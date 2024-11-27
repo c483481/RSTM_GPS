@@ -11,7 +11,9 @@ export interface TruckAttributes extends BaseSequelizeAttribute {
     platNomor: string;
     deskripsi: string;
     status: TYPE_STATUS;
+    truckImg: string;
     estimasiDone: Date | null;
+    truckMaintenanceImg: string | null;
 }
 
 export type TruckCreationAttributes = Optional<TruckAttributes, optionalSequelize>;
@@ -29,6 +31,8 @@ export class Truck extends Model<TruckAttributes, TruckCreationAttributes> imple
     status!: TYPE_STATUS;
     estimasiDone!: Date | null;
     namaTruck!: string;
+    truckImg!: string;
+    truckMaintenanceImg!: string | null;
 
     static initModels(sequelize: Sequelize): typeof Truck {
         return Truck.init(
@@ -59,6 +63,14 @@ export class Truck extends Model<TruckAttributes, TruckCreationAttributes> imple
                 },
                 estimasiDone: {
                     type: DataTypes.DATE,
+                    allowNull: true,
+                },
+                truckImg: {
+                    type: DataTypes.STRING(255),
+                    allowNull: false,
+                },
+                truckMaintenanceImg: {
+                    type: DataTypes.STRING(255),
                     allowNull: true,
                 },
             },

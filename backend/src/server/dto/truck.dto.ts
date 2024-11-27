@@ -1,3 +1,4 @@
+import { UploadedFile } from "express-fileupload";
 import { TYPE_STATUS } from "../../constant/status.constant";
 import { BaseResult, UserAuthToken } from "../../module/dto.module";
 
@@ -5,6 +6,7 @@ export type CreateTruck_Payload = {
     nama: string;
     platNomor: string;
     userSession: UserAuthToken;
+    truckImg: UploadedFile;
 };
 
 export type UpdateTruck_Payload = {
@@ -14,6 +16,7 @@ export type UpdateTruck_Payload = {
     deskripsi: string;
     version: number;
     userSession: UserAuthToken;
+    maintananceImg: UploadedFile | null;
 };
 
 export type TruckResult = BaseResult & {
@@ -22,6 +25,8 @@ export type TruckResult = BaseResult & {
     deskripsi: string;
     status: TYPE_STATUS;
     estimasiDone: number | null;
+    truckImg: string;
+    maintanaceImg: string | null;
 };
 
 export type UpdateLocation_Payload = {

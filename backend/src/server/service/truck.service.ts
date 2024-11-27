@@ -1,4 +1,4 @@
-import { isValid } from "ulidx";
+import { isValid, ulid } from "ulidx";
 import { STATUS } from "../../constant/status.constant";
 import { AppRepositoryMap, TruckRepository } from "../../contract/repository.contract";
 import { compose, composeResult, createData, updateData } from "../../utils/helper.utils";
@@ -9,6 +9,7 @@ import { errorResponses } from "../../response";
 import { GetDetail_Payload, List_Payload, ListResult } from "../../module/dto.module";
 import { TruckService } from "../../contract/service.contract";
 import { toUnixEpoch } from "../../utils/date.utils";
+import fs from "fs";
 
 export class Truck extends BaseService implements TruckService {
     private truckRepo!: TruckRepository;
@@ -43,7 +44,10 @@ export class Truck extends BaseService implements TruckService {
     };
 
     createTruck = async (payload: CreateTruck_Payload): Promise<TruckResult> => {
-        const { nama, platNomor, userSession } = payload;
+        const { nama, platNomor, userSession, truckImg } = payload;
+
+        const img = `/public/${ulid()}.jpg`;
+        await truckImg.mv(`.${img}`);
 
         const createdValue = createData<TruckCreationAttributes>(
             {
@@ -52,6 +56,8 @@ export class Truck extends BaseService implements TruckService {
                 deskripsi: "Truck Tersedia",
                 status: STATUS.TERSEDIA,
                 estimasiDone: null,
+                truckImg: img,
+                truckMaintenanceImg: null,
             },
             userSession
         );
@@ -62,7 +68,7 @@ export class Truck extends BaseService implements TruckService {
     };
 
     updateTruck = async (payload: UpdateTruck_Payload): Promise<TruckResult> => {
-        const { xid, status, estimasiDone, deskripsi, userSession, version } = payload;
+        const { xid, status, estimasiDone, deskripsi, userSession, version, maintananceImg } = payload;
         if (!isValid(xid)) {
             throw errorResponses.getError("E_FOUND_1");
         }
@@ -74,7 +80,7 @@ export class Truck extends BaseService implements TruckService {
         }
 
         let estimasiDoneDate: Date | null = null;
-
+        let maintananceImgUrl: string | null = null;
         if (estimasiDone) {
             const timestamp = new Date(estimasiDone * 1000);
             estimasiDoneDate = new Date(
@@ -88,6 +94,15 @@ export class Truck extends BaseService implements TruckService {
                     timestamp.getUTCMilliseconds()
                 )
             );
+
+            if (maintananceImg) {
+                maintananceImgUrl = `/public/${ulid()}.jpg`;
+                await maintananceImg.mv(`.${maintananceImgUrl}`);
+            }
+
+            if (truck.truckMaintenanceImg) {
+                fs.unlinkSync(`.${truck.truckMaintenanceImg}`);
+            }
         }
 
         const updatedValue = updateData<TruckAttributes>(
@@ -96,6 +111,7 @@ export class Truck extends BaseService implements TruckService {
                 status,
                 estimasiDone: estimasiDoneDate,
                 deskripsi,
+                truckMaintenanceImg: maintananceImgUrl,
             },
             userSession
         );
