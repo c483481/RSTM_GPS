@@ -10,9 +10,9 @@ export class TruckValidator {
 
     static UpdateTruck_Payload = baseValidator.compile({
         status: "string|empty:false|required",
-        estimasiDone: "number|empty:true|nullable|min:1",
+        estimasiDone: "string|empty:true|nullable|min:1",
         deskripsi: "string|empty:false|required|min:5|max:255",
-        version: "number|empty:false|required|min:1",
+        version: "string|empty:false|required|min:1",
         $$strict: true,
     });
 

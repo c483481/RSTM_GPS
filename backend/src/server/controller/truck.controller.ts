@@ -79,6 +79,10 @@ export class TruckController extends BaseController {
         payload.xid = req.params.xid;
         payload.userSession = getForceUsersSession(req);
         payload.maintananceImg = TruckValidator.isValidImage(files);
+        payload.version = Number(payload.version);
+        if (payload.estimasiDone) {
+            payload.estimasiDone = Number(payload.estimasiDone);
+        }
 
         const result = await this.service.updateTruck(payload);
 
