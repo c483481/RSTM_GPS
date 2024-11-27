@@ -69,6 +69,7 @@ export function handleRequest(req: Request, res: Response, next: NextFunction): 
 }
 
 export function handleError(err: Error, _req: Request, res: Response, _next: NextFunction): Response {
+    console.log(err);
     if (err instanceof ErrorResponse) {
         const response = err.getError();
         return res.status(response.status).json({
