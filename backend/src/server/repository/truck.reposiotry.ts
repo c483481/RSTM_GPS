@@ -1,4 +1,4 @@
-import { Order } from "sequelize";
+import { Op, Order, WhereOptions } from "sequelize";
 import { TruckRepository } from "../../contract/repository.contract";
 import { AppDataSource } from "../../module/datasource.module";
 import { FindResult, List_Payload } from "../../module/dto.module";
@@ -35,14 +35,22 @@ export class SequelizeTruckRepository extends BaseRepository implements TruckRep
     };
 
     findList = async (payload: List_Payload): Promise<FindResult<TruckAttributes>> => {
-        const { showAll } = payload;
+        const { showAll, filters } = payload;
 
         const { order } = this.parseSortBy(payload.sortBy);
 
         const limit = showAll ? undefined : payload.limit;
         const skip = showAll ? undefined : payload.skip;
 
+        const where: WhereOptions = {};
+
+        if (filters.name) {
+            where.name = {
+                [Op.iLike]: `%${filters.name}%`,
+            };
+        }
         return this.truck.findAndCountAll({
+            where,
             order,
             limit,
             offset: skip,

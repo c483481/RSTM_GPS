@@ -148,7 +148,7 @@ export class Truck extends BaseService implements TruckService {
 
 export function composeTruck(row: TruckAttributes): TruckResult {
     return composeResult(row, {
-        nama: row.deskripsi,
+        nama: row.namaTruck,
         platNomor: row.platNomor,
         deskripsi: row.deskripsi,
         status: row.status,
