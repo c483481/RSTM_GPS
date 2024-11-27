@@ -25,6 +25,7 @@ COPY --from=builder /app/node_modules ./node_modules
 # copy migration files
 COPY ./.sequelizerc ./
 COPY ./migrations ./migrations
+COPY ./public ./public
 
 # copy build app
 COPY --from=builder /app/build ./build
