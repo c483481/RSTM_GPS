@@ -88,5 +88,6 @@ export function composeCheckpoint(row: CheckpointAttributes): CheckpointResult {
     return composeResult(row, {
         name: row.checkpoint,
         order: row.order,
+        status: row.status,
     });
 }

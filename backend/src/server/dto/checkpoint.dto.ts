@@ -1,3 +1,4 @@
+import { TYPE_STATUS_JADWAL } from "../../constant/status-jadwal.constant";
 import { BaseResult } from "../../module/dto.module";
 
 export interface CreateCheckpoint_Payload {
@@ -9,4 +10,5 @@ export interface CreateCheckpoint_Payload {
 export interface CheckpointResult extends BaseResult {
     name: string;
     order: number;
+    status: TYPE_STATUS_JADWAL;
 }
