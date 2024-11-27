@@ -5,7 +5,7 @@ const name = "truck";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.bulkDelete(name, {}, { truncate: true });
+        await queryInterface.bulkDelete(name, {});
 
         await queryInterface.addColumn(name, "truckImg", {
             type: Sequelize.STRING(255),
