@@ -1,11 +1,11 @@
-import { Order } from "sequelize";
+import { Op, Order, WhereOptions } from "sequelize";
 import { AppDataSource } from "../../module/datasource.module";
 import { FindResult, List_Payload } from "../../module/dto.module";
 import { Jadwal, JadwalAttributes, JadwalCreationAttributes, JadwalJoinAttributes } from "../model/jadwal.model";
 import { BaseRepository } from "./base.repository";
 import { JadwalRepository } from "../../contract/repository.contract";
 import { Truck } from "../model/truck.model";
-import { Users } from "../model/users.model";
+import { Users, UsersAttributes } from "../model/users.model";
 import { Checkpoint } from "../model/checkpoint.model";
 
 export class SequelizeJadwalRepository extends BaseRepository implements JadwalRepository {
@@ -65,14 +65,30 @@ export class SequelizeJadwalRepository extends BaseRepository implements JadwalR
     };
 
     findList = async (payload: List_Payload): Promise<FindResult<JadwalJoinAttributes>> => {
-        const { showAll } = payload;
+        const { showAll, filters } = payload;
 
         const { order } = this.parseSortBy(payload.sortBy);
 
         const limit = showAll ? undefined : payload.limit;
         const skip = showAll ? undefined : payload.skip;
 
+        const where: WhereOptions<JadwalAttributes> = {};
+        const whereUser: WhereOptions<UsersAttributes> = {};
+        if (filters.startAt && filters.endAt) {
+            const startAtDate = new Date(Number(filters.startAt) * 1000);
+            const endAtDate = new Date(Number(filters.endAt) * 1000);
+
+            where.startDate = {
+                [Op.between]: [startAtDate.toISOString(), endAtDate.toISOString()],
+            };
+        }
+
+        if (filters.driverXid) {
+            whereUser.xid = filters.driverXid;
+        }
+
         return this.jadwal.findAndCountAll({
+            where,
             order,
             limit,
             offset: skip,
@@ -86,6 +102,7 @@ export class SequelizeJadwalRepository extends BaseRepository implements JadwalR
                     model: Users,
                     as: "driver",
                     foreignKey: "driverId",
+                    where: whereUser,
                 },
                 {
                     model: Checkpoint,
