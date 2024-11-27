@@ -42,10 +42,10 @@ export class SequelizeTruckRepository extends BaseRepository implements TruckRep
         const limit = showAll ? undefined : payload.limit;
         const skip = showAll ? undefined : payload.skip;
 
-        const where: WhereOptions = {};
+        const where: WhereOptions<TruckAttributes> = {};
 
         if (filters.name) {
-            where.name = {
+            where.namaTruck = {
                 [Op.iLike]: `%${filters.name}%`,
             };
         }
