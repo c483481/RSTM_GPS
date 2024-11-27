@@ -51,4 +51,6 @@ export interface UsersService {
 
 export interface CheckpointService {
     createCheckpoint(data: CreateCheckpoint_Payload): Promise<CheckpointResult>;
+
+    updateStatusCheckpoint(payload: PatchJadwal_Payload): Promise<CheckpointResult>;
 }

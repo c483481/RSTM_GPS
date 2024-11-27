@@ -7,4 +7,10 @@ export class CheckpointValidator {
         order: "number|empty:false|required|min:1",
         $$strict: true,
     });
+
+    static PatchCheckpoint_Payload = baseValidator.compile({
+        status: "string|empty:false|required",
+        version: "number|empty:false|required|min:1",
+        $$strict: true,
+    });
 }

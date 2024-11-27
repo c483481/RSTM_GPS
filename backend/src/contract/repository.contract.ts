@@ -56,4 +56,8 @@ export interface JadwalRepository {
 
 export interface CheckpointRepository {
     insertCheckpoint(data: CheckpointCreationAttributes): Promise<CheckpointAttributes>;
+
+    findByXid(xid: string): Promise<CheckpointAttributes | null>;
+
+    updateCheckpoint(id: number, payload: Partial<CheckpointAttributes>, version: number): Promise<number>;
 }
