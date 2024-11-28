@@ -58,6 +58,7 @@ export class SequelizeUsersRepository extends BaseRepository implements UsersRep
         }
 
         return this.users.findAndCountAll({
+            where,
             order,
             limit,
             offset: skip,
