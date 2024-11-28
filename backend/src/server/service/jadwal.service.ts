@@ -145,7 +145,7 @@ export function composeJadwal(row: JadwalJoinAttributes): JadwalResult {
     return composeResult(row, {
         truck: composeTruck(row.truck!),
         driver: composeUsers(row.driver!),
-        checkpoints: row.checkpoints!.map((checkpoint) => composeCheckpoint(checkpoint)),
+        checkpoints: row.checkpoints ? row.checkpoints!.map((checkpoint) => composeCheckpoint(checkpoint)) : [],
         tanggal: toUnixEpoch(row.startDate),
         deskripsi: row.description,
         destination: row.destination,
