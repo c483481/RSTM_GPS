@@ -83,6 +83,16 @@ export class SequelizeJadwalRepository extends BaseRepository implements JadwalR
             };
         }
 
+        if (filters.status) {
+            where.status = filters.status;
+        }
+
+        if (filters.notStatus) {
+            where.status = {
+                [Op.ne]: filters.notStatus,
+            };
+        }
+
         if (filters.driverXid) {
             whereUser.xid = filters.driverXid;
         }
