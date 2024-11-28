@@ -47,6 +47,12 @@ export class SequelizeUsersRepository extends BaseRepository implements UsersRep
             };
         }
 
+        if (filters.name) {
+            where.name = {
+                [Op.iLike]: `%${filters.name}%`,
+            };
+        }
+
         if (filters.role) {
             where.role = filters.role;
         }
