@@ -26,7 +26,7 @@ export class TruckController extends BaseController {
         this.router.get("/", defaultMiddleware(), WrapAppHandler(this.getList));
         this.router.post("/", defaultMiddleware([ROLE.ADMIN]), WrapAppHandler(this.createTruck));
         this.router.put("/:xid", defaultMiddleware([ROLE.ADMIN, ROLE.DRIVER]), WrapAppHandler(this.updateTruck));
-        this.router.post("/:xid/location", WrapAppHandler(this.updateLocation));
+        this.router.get("/:xid/location", WrapAppHandler(this.updateLocation));
     }
 
     getDetail = async (req: Request) => {
@@ -90,11 +90,12 @@ export class TruckController extends BaseController {
     };
 
     updateLocation = async (req: Request) => {
-        const payload = req.body as UpdateLocation_Payload;
+        const payload = req.query as unknown as UpdateLocation_Payload;
+        payload.battery = Number(payload.battery);
+        payload.latitude = Number(payload.latitude);
+        payload.longitude = Number(payload.longitude);
 
         payload.xid = req.params.xid;
-
-        console.log(payload);
 
         validate(TruckValidator.UpdateLocation_Payload, payload);
 
