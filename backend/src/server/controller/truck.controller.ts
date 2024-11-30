@@ -94,6 +94,8 @@ export class TruckController extends BaseController {
 
         payload.xid = req.params.xid;
 
+        console.log(payload);
+
         validate(TruckValidator.UpdateLocation_Payload, payload);
 
         await this.service.updateLocation(payload);
