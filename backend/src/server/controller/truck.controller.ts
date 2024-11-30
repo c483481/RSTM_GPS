@@ -26,7 +26,7 @@ export class TruckController extends BaseController {
         this.router.get("/", defaultMiddleware(), WrapAppHandler(this.getList));
         this.router.post("/", defaultMiddleware([ROLE.ADMIN]), WrapAppHandler(this.createTruck));
         this.router.put("/:xid", defaultMiddleware([ROLE.ADMIN, ROLE.DRIVER]), WrapAppHandler(this.updateTruck));
-        this.router.get("/:xid/location", WrapAppHandler(this.updateLocation));
+        this.router.post("/:xid/location", WrapAppHandler(this.updateLocation));
     }
 
     getDetail = async (req: Request) => {
