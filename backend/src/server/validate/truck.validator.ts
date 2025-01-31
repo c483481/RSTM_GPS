@@ -86,7 +86,7 @@ export class TruckValidator {
         battery: {
             type: "number",
             min: 0,
-            max: 100,
+            max: 200,
             messages: {
                 numberMin: "Battery tidak boleh kurang dari 0",
                 numberMax: "Battery tidak boleh lebih dari 100",
