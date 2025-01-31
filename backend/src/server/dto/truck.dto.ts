@@ -29,6 +29,12 @@ export type TruckResult = BaseResult & {
     maintanaceImg: string | null;
 };
 
+export type TruckInformationResult = BaseResult & {
+    battrey: number;
+    longitude: number;
+    latitude: number;
+};
+
 export type UpdateLocation_Payload = {
     xid: string;
     latitude: number;

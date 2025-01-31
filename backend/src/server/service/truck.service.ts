@@ -1,8 +1,14 @@
 import { isValid, ulid } from "ulidx";
 import { STATUS } from "../../constant/status.constant";
-import { AppRepositoryMap, TruckRepository } from "../../contract/repository.contract";
+import { AppRepositoryMap, TruckInformationRepository, TruckRepository } from "../../contract/repository.contract";
 import { compose, composeResult, createData, updateData } from "../../utils/helper.utils";
-import { CreateTruck_Payload, TruckResult, UpdateLocation_Payload, UpdateTruck_Payload } from "../dto/truck.dto";
+import {
+    CreateTruck_Payload,
+    TruckInformationResult,
+    TruckResult,
+    UpdateLocation_Payload,
+    UpdateTruck_Payload,
+} from "../dto/truck.dto";
 import { TruckAttributes, TruckCreationAttributes } from "../model/truck.model";
 import { BaseService } from "./base.service";
 import { errorResponses } from "../../response";
@@ -10,12 +16,15 @@ import { GetDetail_Payload, List_Payload, ListResult } from "../../module/dto.mo
 import { TruckService } from "../../contract/service.contract";
 import { toUnixEpoch } from "../../utils/date.utils";
 import fs from "fs";
+import { TruckInformationAttributes, TruckInformationCreationAttributes } from "../model/truck-information.model";
 
 export class Truck extends BaseService implements TruckService {
     private truckRepo!: TruckRepository;
+    private truckInformationRepo!: TruckInformationRepository;
 
     init(repository: AppRepositoryMap): void {
         this.truckRepo = repository.truck;
+        this.truckInformationRepo = repository.truckInformation;
     }
 
     getDetail = async (payload: GetDetail_Payload): Promise<TruckResult> => {
@@ -128,7 +137,7 @@ export class Truck extends BaseService implements TruckService {
     };
 
     updateLocation = async (payload: UpdateLocation_Payload): Promise<void> => {
-        const { xid, latitude, longitude, battery } = payload;
+        const { xid, battery, latitude, longitude } = payload;
 
         if (!isValid(xid)) {
             throw errorResponses.getError("E_FOUND_1");
@@ -140,9 +149,39 @@ export class Truck extends BaseService implements TruckService {
             throw errorResponses.getError("E_FOUND_1");
         }
 
-        console.table({ xid, latitude, longitude, battery });
+        const createdValues = createData<TruckInformationCreationAttributes>({
+            truckId: truck.id,
+            battrey: battery,
+            latitude: latitude,
+            longitude: longitude,
+        });
+
+        await this.truckInformationRepo.insert(createdValues);
 
         this.truckRepo.updateLocation(payload);
+    };
+
+    getDetailLocation = async (payload: List_Payload): Promise<ListResult<TruckInformationResult>> => {
+        const truckXid = payload.filters.truckXid;
+
+        if (!isValid(truckXid)) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        const truck = await this.truckRepo.findByXid(truckXid);
+
+        if (!truck) {
+            throw errorResponses.getError("E_FOUND_1");
+        }
+
+        const result = await this.truckInformationRepo.findList(payload);
+
+        const items = compose(result.rows, composeTruckInformation);
+
+        return {
+            items,
+            count: result.count,
+        };
     };
 }
 
@@ -155,5 +194,13 @@ export function composeTruck(row: TruckAttributes): TruckResult {
         estimasiDone: row.estimasiDone ? toUnixEpoch(row.estimasiDone) : null,
         truckImg: row.truckImg,
         maintanaceImg: row.truckMaintenanceImg,
+    });
+}
+
+export function composeTruckInformation(row: TruckInformationAttributes): TruckInformationResult {
+    return composeResult(row, {
+        battrey: row.battrey,
+        latitude: row.latitude,
+        longitude: row.longitude,
     });
 }

@@ -14,8 +14,6 @@ export class TruckSocket extends BaseSocket {
 
     initSocket() {
         this.io.on("connection", (socket) => {
-            console.log("a user connected, with id: ", socket.id);
-
             socket.on("disconnect", () => {
                 console.log("user disconnected");
             });

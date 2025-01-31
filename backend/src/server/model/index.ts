@@ -3,12 +3,14 @@ import { Users } from "./users.model";
 import { Truck } from "./truck.model";
 import { Jadwal } from "./jadwal.model";
 import { Checkpoint } from "./checkpoint.model";
+import { TruckInformation } from "./truck-information.model";
 
 export interface AppSqlModel {
     Users: typeof Users;
     Truck: typeof Truck;
     Jadwal: typeof Jadwal;
     Checkpoint: typeof Checkpoint;
+    TruckInformation: typeof TruckInformation;
 }
 
 export function initSqlModels(sequelize: Sequelize): AppSqlModel {
@@ -16,6 +18,7 @@ export function initSqlModels(sequelize: Sequelize): AppSqlModel {
     Truck.initModels(sequelize);
     Jadwal.initModels(sequelize);
     Checkpoint.initModels(sequelize);
+    TruckInformation.initModels(sequelize);
 
     Jadwal.belongsTo(Users, {
         foreignKey: "driverId",
@@ -42,5 +45,6 @@ export function initSqlModels(sequelize: Sequelize): AppSqlModel {
         Truck,
         Jadwal,
         Checkpoint,
+        TruckInformation,
     };
 }

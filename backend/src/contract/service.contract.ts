@@ -2,7 +2,13 @@ import { GetDetail_Payload, List_Payload, ListResult } from "../module/dto.modul
 import { AuthLogin_Payload, AuthLogin_Result } from "../server/dto/auth.dto";
 import { CheckpointResult, CreateCheckpoint_Payload } from "../server/dto/checkpoint.dto";
 import { CreateJadwal_Payload, JadwalResult, PatchJadwal_Payload } from "../server/dto/jadwal.dto";
-import { CreateTruck_Payload, TruckResult, UpdateLocation_Payload, UpdateTruck_Payload } from "../server/dto/truck.dto";
+import {
+    CreateTruck_Payload,
+    TruckInformationResult,
+    TruckResult,
+    UpdateLocation_Payload,
+    UpdateTruck_Payload,
+} from "../server/dto/truck.dto";
 import { CreateUsers_Payload, UpdateUsers_Payload, UsersResult } from "../server/dto/users.dto";
 
 export interface AppServiceMap {
@@ -27,6 +33,8 @@ export interface TruckService {
     updateTruck(payload: UpdateTruck_Payload): Promise<TruckResult>;
 
     updateLocation(payload: UpdateLocation_Payload): Promise<void>;
+
+    getDetailLocation(payload: List_Payload): Promise<ListResult<TruckInformationResult>>;
 }
 
 export interface JadwalService {

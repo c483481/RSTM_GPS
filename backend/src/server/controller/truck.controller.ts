@@ -27,6 +27,7 @@ export class TruckController extends BaseController {
         this.router.post("/", defaultMiddleware([ROLE.ADMIN]), WrapAppHandler(this.createTruck));
         this.router.put("/:xid", defaultMiddleware([ROLE.ADMIN, ROLE.DRIVER]), WrapAppHandler(this.updateTruck));
         this.router.post("/:xid/location/:lat/:long/:bat", WrapAppHandler(this.updateLocation));
+        this.router.get("/:xid/information", defaultMiddleware(), WrapAppHandler(this.getDetailInformation));
     }
 
     getDetail = async (req: Request) => {
@@ -102,5 +103,13 @@ export class TruckController extends BaseController {
         await this.service.updateLocation(payload);
 
         return "success";
+    };
+
+    getDetailInformation = async (req: Request) => {
+        const payload = getListOption(req);
+
+        const items = await this.service.getDetailLocation(payload);
+
+        return items;
     };
 }
